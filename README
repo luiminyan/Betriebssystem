@@ -1,1 +1,7 @@
 This is the git repository of material from course Betreibssystem of SoSe 2023.
+
+Git commands:
+git add
+git commit -m "message"
+git status
+git push githuburl 	#push remote
