@@ -1,0 +1,40 @@
+#!/bin/bash
+
+assert_stdout() {
+    printf "\t%s ... " "${1}"
+    shift
+    cmp - <("${@}" 2>/dev/null) &>/dev/null && {
+        echo $'\033[32;1mokay\033[0m'
+        return 0
+    } || {
+        echo $'\033[31;1mfail\033[0m'
+        return 1
+    }
+}
+
+assert_stderr() {
+    printf "\t%s ... " "${1}"
+    shift
+    cmp - <("${@}" 2>&1 1>/dev/null) &>/dev/null && {
+        echo $'\033[32;1mokay\033[0m'
+        return 0
+    } || {
+        echo $'\033[31;1mfail\033[0m'
+        return 1
+    }
+}
+
+
+echo $'Testen von \033[1mprintf\033[0m:'
+
+assert_stdout "IP ohne Padding" ./printf 255.255.255.255 <<EOF
+Oct: 377-377-377-377
+Dec: 255.255.255.255
+Hex: ff:ff:ff:ff
+EOF
+
+assert_stdout "IP mit maximalem Padding" ./printf 0.0.0.0 <<EOF
+Oct:   0-  0-  0-  0
+Dec: 0.0.0.0
+Hex: 00:00:00:00
+EOF

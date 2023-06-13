@@ -1,88 +1,71 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>	//malloc, free
+
 
 // TODO: structs, global variables, etc.
-typedef struct listElement{
-    int value;
-    struct listElement *next;
-} n;
+//define struct
+typedef struct listelement{
+	/* data */
+	int value;
+	struct listelement* next;
+} node;			//shorten for struct listelement
 
-//empty head element
-n *head = NULL;
+//global variables
+node* head;		//head node = NULL
+
 
 static int insertElement(int value) {
 	// TODO: implement me!
-    if (value < 0){
-        return -1;
-    }
-    if (head == NULL){
-        head = (n*) malloc(sizeof(n*));
-        head->value = value;
-        head->next = NULL;
-        return head->value;
-    }
+	if (value < 0){			//invalid value, fehler
+		return -1;
+	}
 
-    n *node = head;
+	if (head == NULL){
+		head = malloc(sizeof(node*));
 
-    while (1){
-        if (node->value == value){
-            return -1;
-        }
-        if (node->next == NULL){
-            n *toInsert = (n*) malloc(sizeof(n*));
-            toInsert->value = value;
-            toInsert->next = NULL;
-            node->next = toInsert;
-            return node->next->value;
-        }
-        node = node->next;
-    }
+		if (head == NULL){
+			return -1;
+		}
+
+		head->next = NULL;
+		head->value = value;
+		return head->value;
+	}
+
+	node* listNode = head;
+	while(1){
+		if (listNode->value == value){
+			return -1;
+		}
+		if(listNode->next == NULL){
+			node* nextNode = malloc(sizeof(node*));
+			if (nextNode == NULL){
+				return -1;
+			}
+			nextNode->value = value;
+			nextNode->next = NULL;
+			listNode->next = nextNode;
+			return listNode->next->value;
+		}
+		listNode = listNode->next; 	
+	}
 }
 
-
-
-static int removeElement(void) {    //remove the newest node
+static int removeElement(void) {
 	// TODO: implement me!
-    if (head == NULL){      //empty list return -1
-        return -1;
-    }
-
-    // if only one node
-    if (head->next == NULL){
-        int result = head->value;
-        return result;
-    }
-
-    n *newNode1 = head;
-    n *newNode2 = head;
-    while (newNode1->next != NULL){     //end node
-        newNode1 = newNode1->next;
-    }
-    while (newNode2->next != newNode1){ //node before end node
-        newNode2 = newNode2->next;
-    }
-    int result = newNode1->value;
-    free(newNode1);
-    newNode2->next = NULL;
-    return result;
+	return -1;
 }
 
 int main (int argc, char* argv[]) {
 	printf("insert 47: %d\n", insertElement(47));
 	printf("insert 11: %d\n", insertElement(11));
 	printf("insert 23: %d\n", insertElement(23));
-	printf("insert 11: %d\n", insertElement(11));   //return -1
+	printf("insert 11: %d\n", insertElement(11));
+	printf("insert -2: %d\n", insertElement(-2));
 
 	printf("remove: %d\n", removeElement());
 	printf("remove: %d\n", removeElement());
-    printf("remove: %d\n", removeElement());
 
-
-    // TODO: add more tests
-    printf("insert -1: %d\n", insertElement(-1));   //return -1
-    printf("insert 1: %d\n", insertElement(1));
-    printf("insert 2: %d\n", insertElement(2));
-    printf("insert 3: %d\n", insertElement(3));
-
-    exit(EXIT_SUCCESS);
+	// TODO: add more tests
+	exit(EXIT_SUCCESS);
 }

@@ -1,3 +1,0 @@
-/Users/liuminhua/Desktop/Betriebssystem/SelfTesting/A2Wsort/cmake-build-debug/CMakeFiles/A2Wsort.dir
-/Users/liuminhua/Desktop/Betriebssystem/SelfTesting/A2Wsort/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/liuminhua/Desktop/Betriebssystem/SelfTesting/A2Wsort/cmake-build-debug/CMakeFiles/rebuild_cache.dir
