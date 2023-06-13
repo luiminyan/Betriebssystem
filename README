@@ -5,3 +5,8 @@ git add
 git commit -m "message"
 git status
 git push githuburl 	#push remote
+
+
+Uebung 04 Modules(make,gcc) & Präprozessor(marcos)
+Uebung 05 I/O & Wsort
+Uebung 06 Adressraumstruktur
