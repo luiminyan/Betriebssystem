@@ -11,7 +11,7 @@ typedef struct listelement{
 } node;			//shorten for struct listelement
 
 //global variables
-node* head;		//head node = NULL
+static node* head;		//head node = NULL
 
 
 static int insertElement(int value) {
@@ -53,6 +53,11 @@ static int insertElement(int value) {
 
 static int removeElement(void) {
 	// TODO: implement me!
+	if (head == NULL){
+		return -1;
+	}
+	node* listNode = head;	
+
 	return -1;
 }
 
