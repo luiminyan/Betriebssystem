@@ -48,8 +48,6 @@ int main (int argc, char** argv){
     printf("Array after sorting:\n");
     print_array(array, arrlen);
 
-
-
     //free allocation of array
     free(array);
 
