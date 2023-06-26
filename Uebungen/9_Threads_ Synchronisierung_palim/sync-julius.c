@@ -34,6 +34,25 @@ static void die(const char *msg) {
 	exit(EXIT_FAILURE);
 }
 
+static void err(const char *msg) {
+	fprintf(stderr, "%s\n", msg);
+	exit(EXIT_FAILURE);
+}
+
+static void *sumRow(void *arg) {
+	struct param *par = arg;	// void Pointer zu Parameter Struktur Pointer parsen
+	double localSum = 0;	// Variable für Summe einer Zeile
+	
+	// Summe einer Zeile berechnen
+	for(int j = 0; j < 100; j++)
+		localSum += a[par->index][j];
+	
+	P(sem_mutex);	// kritischen Bereich blockieren
+	sum += localSum;	// Summe zu Gesamtsumme addieren
+	V(sem_mutex);	// kritischen Bereich freigeben
+	return NULL;
+}
+
 int main(int argc, char *argv[]) {
 	// Semaphore initialisieren
 	sem_mutex = semCreate(1); 	//nur 1 Thread erlaubt
@@ -60,16 +79,3 @@ int main(int argc, char *argv[]) {
     semDestroy(sem_mutex);	// Semaphore freigeben
 }
 
-static void *sumRow(void *arg) {
-	struct param *par = arg;	// void Pointer zu Parameter Struktur Pointer parsen
-	double localSum = 0;	// Variable für Summe einer Zeile
-	
-	// Summe einer Zeile berechnen
-	for(int j = 0; j < 100; j++)
-		localSum += a[par->index][j];
-	
-	P(sem_mutex);	// kritischen Bereich blockieren
-	sum += localSum;	// Summe zu Gesamtsumme addieren
-	V(sem_mutex);	// kritischen Bereich freigeben
-	return NULL;
-}
