@@ -10,6 +10,6 @@ git push githuburl 	#push remote
 Uebung 04 Modules(make,gcc) & Präprozessor(marcos)
 Uebung 05 I/O & Wsort
 Uebung 06 Adressraumstruktur
-Uebung 07
-Uebung 08
-Uebung 09
+Uebung 07 Freispeicherverwaltung
+Uebung 08 Filesystem
+Uebung 09 Threads
