@@ -1,197 +1,291 @@
-#include <stdio.h>
+#include <stdio.h> 
 #include <stdlib.h>
-#include <unistd.h>     //fork
+#include <unistd.h>     //fork(), getcwd
+#include <sys/wait.h>   //wait
+#include <errno.h>
 #include <string.h>
-#include <sys/wait.h>   //waitpid
-#include <sys/types.h>
-#include <stdbool.h>
-#include <errno.h>  //errno
+#include "plist.h"      //need to use a function from plist.h
 
-#include "plist.h"
+// #include <sys/types.h>  //fork
+#define MAX_LENGTH 1337 //max 1337 Zeichen (User input)
 
-#define MAXLENGTH 1337      //the max length of a line (include \n)
-
-//deal with error - done
-static void kill(char* message){
-    perror(message);
+//Fehlerbehandlung (gesetzte errno)
+static void die(char* func_name){
+    perror(func_name);
     exit(EXIT_FAILURE);
 }
 
-//print prompt - done
-//get and print current working directory with getcwd()
-/*
- * char *getcwd(char *buffer, size_t size)
- * in buffer: the stored directory, size is the length 
- * return NULL: error / not enough space (errno = ERANGE)
- */
-static void prompt(void){
-    size_t length = 1024;   //as an initial size for cwd, need to be increased
-    char* buffer = NULL;   //create buffer to store the working directory, pointer: as a parameter in realloc, 
+//Warnung
+static void warn(char* func_name){
+    fprintf(stderr, "%s", func_name);
+    //fputs(func_name, stderr);
+}
 
-    //increase to proper length and store the directory as string into buffer
-    while(0){
-        buffer = realloc(buffer, length);   //re-allocate the space for buffer
+//1st step: print the current path - done!
+static void print_path() {
+    //set errno back to 0, as we need it to deal with error by getcwd
+    errno = 0;
 
-        //error by realloc
-        if (buffer == NULL){
-            kill("realloc");
+    //create buffer for path
+    int buff_path_len = 255;    //length of buff_path
+    char* buff_path = malloc(sizeof(char*) * buff_path_len);
+    //error by malloc
+    if (buff_path == NULL) {
+        die("malloc");
+    }
+
+    //getcwd, if NULL error
+    while (getcwd(buff_path, buff_path_len) == NULL) {
+        //if errno = ERANGE, buffer not big enough, increase buffer
+        if (errno == ERANGE) {
+            buff_path_len *= 2; 
+            buff_path = realloc(buff_path, sizeof(char*) * buff_path_len);
+            //error by realloc
+            if (buff_path == NULL) {
+                die("realloc");
+            }
+        }
+        else die("getcwd");
+    }
+
+    //print out the path
+    if (printf("%s:", buff_path) < 0) {
+        die("fprintf");
+    }
+
+    //fflush stdout
+    if (fflush(stdout) == EOF){
+        die("fflush");
+    }
+
+    //!!!!!free the allocation
+    free(buff_path);
+}
+
+//print_jobs, the callback function
+static bool print_jobs(pid_t pid, const char* str){
+    if (printf("pid: %d, job: %s", (int) pid, str) < 0) {
+        die("printf");
+    }
+    return 0;
+} 
+
+//4th step: collect zombies
+static void collect_zombies(){
+    int status;         //store the child process return status
+    pid_t wait_val;     //for fork
+
+    while (1) {
+        //reset errno
+        errno = 0;
+
+        wait_val = waitpid(-1, &status, WNOHANG);      // (-1: for all child process, ..., wait no hang)
+        //error by waitpid
+        if (wait_val == -1) {
+            //special case: all zombies are collected / no zombie found
+            if (errno == ECHILD) {
+                break;      //zombie collection is done, break loop
+            }
+            else die("waitpid");
         }
 
-        //length is big enough, do the loop again
-        if (getcwd(buffer, length) != NULL){
+        //child still running
+        else if (wait_val == 0) {
             continue;
         }
 
-        //getcwd(..) = NULL, check if is because of size or is a real error
-        else if (errno != ERANGE){
-            //errno = ERANGE, not enough space, not an error
-            kill("getcwd");     //real error
+        //else: child terminated
+        //create buffer to store the job
+        char buff_job[MAX_LENGTH + 1];      //"\n" is removed by plist operations
+
+        //done: remove zombie from list
+        if (removeElement(wait_val, buff_job, sizeof(buff_job)) == -1) {
+            //zombie is not found in list
+            continue;
         }
 
-        length *= 2;    //increase length   
-    }
-
-    fprintf(stdout, "%s: ", buffer);    //format = "working directory:"
-
-    fflush(stdout);      //flush the stdout
-    free(buffer);       //free the buffer 
-}
-
-//print background process as [pid] command - done
-static bool print_job(pid_t pid, char* buffer){
-    fprintf(stdout, "[%d] %s\n", pid, buffer);
-    return 0;
-}
-
-//print exit status - done
-static void print_exit_status(int status, char* buffer){
-    if (WIFEXITED(status)) {        //if WIFEXITED(status) == 1, successfully exit
-        fprintf(stdout, "Exitstatus [%s] = %d", buffer, WEXITSTATUS(status));   //print in required format
-    }
-}
-
-//collect zombies - done
-static void collect_zombies(void){
-    pid_t wpid;
-    int status;
-
-    //kill all zombie child process 
-    while ((wpid = waitpid(-1, &status, WNOHANG)) != 0){
-        //-1: wait for all process
-        
-        /*
-         * wpid = -1: error 
-         * wpid = 0: with WNOHANG, zombie still alive
-         * wpid > 0: zombie successfully terminated, wpid = pid of the zombie
-         */
-
-        if (wpid == -1){
-            if (errno == ECHILD) {
-              // there is no child process, not an error
-              break;
-            }
-            kill("waitpid");
-        }
-
-        // wpid > 0, zombie successfully collected
-        else if (wpid > 0){
-            char buffer[MAXLENGTH + 1];
-
-            //remove terminated zombie process from linked list in plist, call removeElement
-            if (removeElement(wpid, buffer, sizeof(buffer)) < 0){
-                continue;       //wpid not found in linked list
-            }
-
-            //print exit status
-            print_exit_status(status, buffer);
-        }
-    }   //no more child process, end of the while loop
-}
-
-//todo
-int main(void){
-    while(1){
-        collect_zombies();  //collect the zombie processes
-        prompt();       //print the directory
-
-        //read from stdin - todo
-        char buffer[MAXLENGTH + 1];     //max length + 1 (\0)
-
-        //read from stdin and write in buffer - done
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL){
-            //end of stdin
-            if (feof(stdin)){   //end
-                break;
-            }
-
-            //real error
-            else kill("fgets");
-        }
-
-        //string too long, like wsort - done
-        if(strlen(buffer) == MAXLENGTH && buffer[MAXLENGTH - 1] != '\n'){
-            fprintf(stderr, "The word is too long!\n"); //not error but warning
-            //also skip the rest of this line(the part which is too long)
-            int c;
-            do {
-                c = getchar();
-            }while((c != EOF) &&(c != '\n'));
-
-            //error from stdin by getchar
-            if (ferror(stdin)){
-                kill("getchar");
-            }
-            continue; //skip
-        }
-
-        //skip empty line, like wsort - done
-        if (strlen(buffer) < 2){   //only with "\n" or EOF (user input = ctrl + D )
-            continue;   //skip 
-        }
-
-        //remove \n (new line symbol)
-        buffer[strlen(buffer)-1] = "\0";
-
-
-
-        bool background = false;    //boolean for background status, init = foreground
-        if (buffer[strlen(buffer)-1] == "\&"){      //background
-            buffer[strlen(buffer)-1] == "\0";
-            background = true;
-        }
-
-        //copy the correct word into copy
-        char copy[sizeof(buffer)];
-        strcpy(copy, buffer);
-
-        //break a string into parts
-        strtok(buffer, "\t");
-
-
-        //todo: command = jobs
-        //also call walklist(print_job)
         
 
-        //create child process
-        pid_t pid;
-        pid = fork();   //create child process
-        if (pid < 0){   //error by fork
-            kill("fork");
+        if (WIFEXITED(status) == true) {
+            printf("Exitstatus [%s] = %d\n", buff_job, status);
+        }
+        else printf("[%s] did not exit with success", buff_job);
+
+        //error by printf
+        if (ferror(stdout)) {
+            die("printf");
         }
 
-        //the child process
-        else if (pid == 0){     
-            //todo
+        //flush stdout
+        if (fflush(stdout) == EOF) {
+            die("fflush");
         }
+    }
+}
 
-        //todo: the parent process
-
-    } //end of the while(1)
+int main(int argc, char** argv){
+    //buffer for input
+    char buff_input[MAX_LENGTH + 1];
+    int foreground = 1;         //Vordergrund, the parent process
     
+    //repeat when no error
+    while (1) {
+        //Vordergrund
+        foreground = 1;
 
-    exit(EXIT_SUCCESS); 
+        //collect zombies before print path
+        collect_zombies();
+
+        //print the path
+        print_path();
+
+        //flush stdin
+        if (fflush(stdin) == EOF) {
+            die("fflush");
+        }
+        
+
+        //2nd read user input
+        /* read input begins */
+        if (fgets(buff_input, MAX_LENGTH + 1, stdin) == NULL) {
+            //no character, terminate program 
+            if (feof(stdin)) {
+                exit(EXIT_SUCCESS);
+            }
+            //real error
+            die("fgets");
+        }
+
+        //check if too short input
+        if (strlen(buff_input) < 2) {
+            continue;
+        }
+
+        //check if input too long
+        if (strlen(buff_input) == MAX_LENGTH && buff_input[MAX_LENGTH - 1] != '\n') {
+            //strlen: "\0" not calculated
+            warn("Input too long!\n");
+
+            //clear left input in stdin
+            int buff_char;
+            do {
+                buff_char = getc(stdin);
+            } while (buff_char != EOF && buff_char != '\n');
+            //error by getc
+            if (ferror(stdin)) {
+                die("getc");
+            }
+
+            //next input
+            continue;
+        }
+
+        //remove the end symbol: 2 cases
+        //in "Vordergrund": remove "\n"
+        if (buff_input[strlen(buff_input) - 1] == '\n') {
+            buff_input[strlen(buff_input) - 1] = '\0';
+        }
+
+        //in "Hintergrund": remove "&"
+        if (buff_input[strlen(buff_input) - 1] == '&') {
+            //now we are in "Hintergrund"
+            foreground = 0;     
+            buff_input[strlen(buff_input) - 1] = '\0';
+        }
+
+        //copy the buff_input
+        char* job = buff_input;
+        /* read input ends */
+
+        //do the strtok, seperate the cmd into tokens
+        char* token = NULL;
+        int index = 0;
+        char* cmd_list[strlen(buff_input) / 2 + 2];
+
+        //extract the first token
+        token = strtok(buff_input, " \t");
+
+        //empty cmd
+        if (cmd_list[0] == NULL || strlen(cmd_list[0]) == 0){
+            continue;       //skip
+        }
+
+        //do the rest tokens
+        while(token) {
+            cmd_list[index] = token;    //store into list
+            index++;        //increase the index for iteration
+            token = strtok(NULL, " \t");    //extract the next token
+        }
+        /* END OF STRTOK */      
+
+        //cmd = cd + path = cmd_list[0] + cmd_list[1]
+        if (strcmp(cmd_list[0], "cd") == 0) {
+            if (cmd_list[1] == NULL) {
+                warn("Parameter missing.");
+            }
+            else if (cmd_list[2] != NULL) {
+                warn("Too many parameters!");
+            }
+            else {
+                if (chdir(cmd_list[1]) == -1) {
+                    die("chdir");
+                }
+            }
+            continue;
+        }
+
+        //cmd = jobs
+        if (strcmp(cmd_list[0], "jobs") == 0) {
+            if (cmd_list[1] != NULL) {
+                warn("Too many parameters.");
+            }
+            else {
+                walkList(print_jobs);
+            }
+            continue;
+        } 
+
+        //create child processes to do the job
+        pid_t pid = fork();
+        
+        //error by fork
+        if (pid < 0) {
+            die("fork");
+        }
+
+        //child process
+        else if (pid == 0) {
+            //do the job
+            execvp(cmd_list[0], cmd_list);
+            die("execvp");
+
+        }
+
+        //parent process
+        if (!foreground){
+            printf("enter background\n");
+
+            if (-2 == insertElement(pid, job)) {
+                warn("malloc or strdup");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else {
+            printf("enter frontend\n");
+            int status;
+            if (waitpid(pid, &status, 0) < 0) {
+                die("waitpid");
+            }
+            // Hier Exitstatus ausgeben.
+            if(WIFEXITED(status)) {
+                // exit with success
+                 printf("Exitstatus [%s] = %d\n", job, WEXITSTATUS(status));
+                }
+            else {
+                printf("[%s] did not exit with success", job);
+            }
+        }
+    }
+    exit(EXIT_SUCCESS);
 }
-
-
-
 

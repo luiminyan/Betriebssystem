@@ -45,6 +45,7 @@ int main(int argc, char** argv){
                 execlp(argv[1], argv[1], argv[i], NULL);  
                 die("execlp");  //error
             }
+            
             //parent process
             else {
                 //wait for child process
