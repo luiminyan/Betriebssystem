@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <dirent.h>
+#include <dirent.h>		//struct dirent, ptr to current directory
 #include <errno.h>
+
+//add 
+#include <sys/stat.h>	//info by lstat
+#include <pthread.h>	//thread
+#include "sem.h"	//semaphore
 
 struct statistics {
 	int lines;
@@ -15,8 +20,12 @@ struct statistics {
 };
 
 // (module-)global variables
-static struct statistics stats;
+static struct statistics stats;		//thread information
 // TODO: add variables if necessary
+
+//semaphores
+static SEM* statsMutex;
+
 
 // function declarations
 static void* processTree(void* path);

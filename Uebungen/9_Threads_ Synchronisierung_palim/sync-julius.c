@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < 100; i++) {
 		args[i].index = i;	//Parameter setzen
 		errno = pthread_create(&tids[i], NULL, sumRow, &args[i]);	//Thread erzeugen
+		//pthread_create(tid, NULL, func., param.);
 		if(errno != 0)
             die("pthread_create");
 	}
