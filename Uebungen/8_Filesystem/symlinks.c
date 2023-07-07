@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
     //init dirent to store the current directory info
     struct dirent * read_entry = NULL;
 
-    //create stat to store symlink information by lstat()
+    //create stat buf to store item information by lstat()
     struct stat buf;        
 
     
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
             break;
         }
 
-        //extract the symlink data in buf
+        //extract the item into buf
         if (lstat(read_entry->d_name, &buf) == -1){
             //lstat(address, ptr of buffer (&ptr) to store)
             //0 success, -1 error and errno is set
