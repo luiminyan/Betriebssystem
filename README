@@ -6,10 +6,17 @@ git commit -m "message"
 git status
 git push githuburl 	#push remote
 
-
+Uebung 00 - 03: c basics
 Uebung 04 Modules(make,gcc) & Präprozessor(marcos)
 Uebung 05 I/O & Wsort
 Uebung 06 Adressraumstruktur
 Uebung 07 Freispeicherverwaltung
 Uebung 08 Filesystem
 Uebung 09 Threads
+
+Aufgabe 0: Sieve (C basics)
+Aufgabe 1: Lilo (linked list)
+Aufgabe 2: Wsort (qsort + malloc / free + string functions)
+Aufgabe 3: Clash (processes)
+Aufgabe 4: Halde
+Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / direactory operation)
