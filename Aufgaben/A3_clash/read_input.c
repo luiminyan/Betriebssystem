@@ -36,7 +36,7 @@ static void read_input() {
                 if (ferror(stderr)) {
                     die("fprintf");
                 }
-                exit(EXIT_SUCCESS);     //quit the program
+                // exit(EXIT_SUCCESS);     //quit the program
             }
         }
 

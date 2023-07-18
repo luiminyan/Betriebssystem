@@ -64,11 +64,11 @@ int main(int argc, char* argv[]){
         //read and store the target of the symlink
         //the length of the target
         off_t target_size = buf.st_size;
-        //int array for storage
+        //string for storage
         char target_symlink[target_size + 1];   //init one more space for '\0'
         target_symlink[target_size] = '\0';
 
-        //store in array
+        //store in string
         if (readlink(read_entry->d_name, target_symlink, target_size) == -1){
             kill("readlink");
         }
@@ -81,10 +81,10 @@ int main(int argc, char* argv[]){
     }
 
     //close directory
-        if (closedir(dir_ptr) == -1){
-            //closedir(): success 0, fail -1
-            kill("closedir");
-        }
+    if (closedir(dir_ptr) == -1){
+        //closedir(): success 0, fail -1
+        kill("closedir");
+    }
     
     exit(EXIT_SUCCESS);
 }

@@ -68,7 +68,7 @@ int main(int argc, char** argv){
 
                 //child process exits
                 if (WIFEXITED(status)) {
-                    if (printf("child process with pid%d exit with code%d\n", pid, WIFEXITED(status)) < 0){
+                    if (printf("child process with pid%d exit with code%d\n", pid, WEXITSTATUS(status)) < 0){
                         die("printf");
                     }
                 }
