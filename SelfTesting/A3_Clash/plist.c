@@ -19,6 +19,14 @@ static struct queue_element *head;
 
 void walkList(bool (*callback) (pid_t, const char *)) {
 	// TODO: implement me
+	//create queue item
+	struct queue_element* q;
+	for (q = head; q != NULL; q = q->next) {
+		if (!callback(q->pid, q->cmdLine)) {
+			//something's wrong with the walklist func
+			break;
+		}
+	}
 }
 
 int insertElement(pid_t pid, const char *cmdLine) {

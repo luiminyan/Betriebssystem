@@ -107,6 +107,12 @@ static void colllect_zombies() {
 
 }
 
+//print_list
+static bool print_list(pid_t pid, const char* jobs) {
+    printf("pid: %d, jobs: %s", pid, jobs);
+    return true;
+}
+
 int main(int argc, char* argv[]){
     while (1) {
         //if process in background
@@ -221,8 +227,15 @@ int main(int argc, char* argv[]){
         }
 
         //jobs
-        if (strcmp(arg_list[0], "jobs")) {
+        if (strcmp(arg_list[0], "jobs") == 0) {
             //TODO: print out all the background processes
+            if (index > 1 || arg_list[1] != NULL) {
+                warn("Too mang aruguments!");
+                continue;
+            }
+            //TODO: call walklist in plist.c
+            walkList(print_list);
+            continue;
         }
 
         //create child process to do the job
