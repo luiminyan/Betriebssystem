@@ -17,6 +17,7 @@ static void warn (char* msg) {
     //no error dealing on error dealing
 }
 int main(int argc, char* argv[]) {
+    //read line recursivly till EOF of stdin
     while (1) {
         //read input
         //create line buffer
@@ -35,6 +36,14 @@ int main(int argc, char* argv[]) {
         //line too long: line = [MAX_LINE]X && X != '\n'
         if ((strlen(line) == MAX_LINE + 1) && (line[strlen(line) - 1] != '\n')) {
             warn("Input line too long!");
+            //skip the rest chars of this line
+            int c;
+            do {
+                c = getchar();
+            } while (c != '\n' && c != EOF);
+            if (ferror(stdin)) {
+                die("getchar");
+            }
             continue;
         }
 
@@ -48,8 +57,11 @@ int main(int argc, char* argv[]) {
         if (line[strlen(line) - 1] == '\n') {
             line[strlen(line) - 1] = '\0';
         }
+
+        //test the readline func
+        printf("%s\n", line);
         
-        
+
     }
     
     
