@@ -22,7 +22,8 @@ static int comp_func(const void* a, const void* b) {
     //casting into string
     const char** ca = (const char**) a;
     const char** cb = (const char**) b;
-    return *ca - *cb;
+    /* ATTENTION: strcmp when comparting strings!!! use string functions!!! */
+    return strcmp(*ca, *cb);
 }
 
 int main(int argc, char* argv[]) {
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
     int line_count = 0;
     int alloc_count = 1;
 
-    //allocation for string array
+    //ATTENTION!!!: allocation for string array
     char** line_list = calloc(alloc_count, sizeof(char*));
     //error by calloc
     if (line_list == NULL) {
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             //error / ferror(stdin)
-            die("fgets");
+            else die("fgets");
         }
 
         //modify line input
@@ -110,7 +111,8 @@ int main(int argc, char* argv[]) {
 
     //write into stdout
     for (int i = 0; i < line_count; i++) {
-        if (fputs(line_list[i], stdout) == EOF) {
+        //ATTENTION: fputs does not add '\0' at end of the line
+        if (puts(line_list[i]) == EOF) {
             die("fputs");
         }
         //free allocation by line
