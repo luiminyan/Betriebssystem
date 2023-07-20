@@ -196,7 +196,7 @@ int main(int argc, char* argv[]){
         //no valid arg
         if (arg_list[index] == NULL) {
             //skip this line
-            break;
+            continue;
         }
         index++;
         //extract the rest

@@ -4,15 +4,15 @@ CFLAGS = -std=c11 -pedantic -Wall -Werror -D_XOPEN_SOURCE=700
 all: clash
 
 clash: clash.o plist.o
-	$(CC) -o clash clash.o plist.o
+	$(CC) -o clash clash.c plist.c
 
 clash.o: clash.c plist.h
-	$(CC) $(CFLAGS) -c clash.c
+	$(CC) $(CFLAGS) -c clash.c 
 
 plist.o: plist.c plist.h
 	$(CC) $(CFLAGS) -c plist.c
 
-clean: 
-	rm -f *.o clash
+clean:
+	rm -f clash *.o
 
-.PHONY: all clean
+.Phony: all clean
