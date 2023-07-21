@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 	if (statsMutex == NULL) {
 		die("semCreate");
 	}
-	grepThreadSem = semCreate(stats.activeGrepThreads);
+	grepThreadSem = semCreate(stats.maxGrepThreads);
 	//error by semCreate
 	if (grepThreadSem == NULL) {
 		die("semCreate");
@@ -175,6 +175,7 @@ int main(int argc, char** argv) {
 		P(statsMutex);	//protect stats, as we need to read stats info
 		int active_grep = stats.activeGrepThreads;
 		int active_craw = stats.activeCrawlThreads;
+		V(statsMutex);
 		//no more active threads
 		if ((active_grep <= 0) && (active_craw <= 0)) {
 			break;
