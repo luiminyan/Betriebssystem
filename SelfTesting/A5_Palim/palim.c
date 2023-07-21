@@ -4,6 +4,8 @@
 #include <errno.h>
 //usage of semaphores
 #include "sem.h"
+//pthread
+#include <pthread.h>
 
 struct statistics {
 	int lines;
@@ -28,7 +30,7 @@ static char* searchString;
 //sem for signaling of new data
 static SEM* newDataSignal;
 //sem for controlling grep thread number
-static SEM* grepThreamSem;
+static SEM* grepThreadSem;
 //sem for protecting statistics
 static SEM* statsMutex;
 
@@ -50,6 +52,26 @@ static void die(const char *msg) {
 }
 
 // TODO: add declarations if necessary
+static void incStats(int* attr) {
+	P(statsMutex);	//block
+	*attr += 1;
+	V(statsMutex);	//unblock
+}
+
+static void decStats(int* attr) {
+	P(statsMutex);
+	*attr -= 1;
+	V(statsMutex);
+}
+
+static void print_stats() {
+	//enter critical section
+	P(statsMutex);
+	//do the copy
+
+	//exit critical section
+	V(statsMutex);
+}
 
 
 
@@ -86,9 +108,66 @@ int main(int argc, char** argv) {
 	//implement semaphores
 	//for passively waiting of the main process
 	newDataSignal = semCreate(0);
+	//error by semCreate
+	if (newDataSignal == NULL) {
+		die("semCreate");
+	}
 	//sem for max number for grep threads
-	grepThreamSem = semCreate(stats.maxGrepThreads);
-	//sem for 
+	grepThreadSem = semCreate(stats.maxGrepThreads);
+	if (grepThreadSem == NULL) {
+		die("semCreate");
+	}
+	//sem / mutex for protecting stats information
+	statsMutex = semCreate(1);
+	if (statsMutex == NULL) {
+		die("semCreate");
+	}
+
+	//create crawl-threads list accroding to tree number 
+	pthread_t crawlThreadList[argc - 3];
+	
+	//reset errno
+	errno = 0;
+
+	//create crawl threads for all the trees
+	for (int i = 3; i < argc; i++) {
+		//pthread_create(pthread_t, NULL, func, argu.)
+		errno = pthread_create(crawlThreadList[i], NULL, processTree, argv[i]);
+		//error by pthread_create
+		if (errno != 0) {
+			die("pthread_create");
+		}
+
+		//DONE: update stats info, as multiple thread are created, use mutex
+		incStats(&stats.activeCrawlThreads);
+
+		//pthread_detach(pthread_t): set thread to automatic collection
+		errno = pthread_detach(crawlThreadList[i]);
+		//error by pthread_detach
+		if (errno != 0) {
+			die("pthread_detach");
+		}
+	}
+
+	//passive waiting
+	while (1) {
+		P(newDataSignal);	//if a V(newDataSignal) is called, enter next line
+		//check is still active threads exists
+		//read threads information from stats
+		P(statsMutex);
+		int activeCrawl = stats.activeCrawlThreads;
+		int activeGrep = stats.activeGrepThreads;
+		V(statsMutex);	//reading finished, exit & unblock crtitical area
+		//no more active threads
+		if ((activeCrawl <= 0) && (activeGrep <= 0)) {
+			break;		//exit the waiting loop
+		}
+	}
+
+	//TODO: print stats information
+
+
+	
 	
 
 	return EXIT_SUCCESS;

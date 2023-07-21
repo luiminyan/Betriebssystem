@@ -23,7 +23,7 @@ struct statistics {
 // (module-)global variables
 static struct statistics stats;		//global information
 
-// TODO: add variables if necessary
+//add variables if necessary
 #define MAX_LINE 4096		//max line length of a file
 static char* search_string;		//the string to be searched
 
