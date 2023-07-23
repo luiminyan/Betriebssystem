@@ -410,7 +410,7 @@ static void* processFile(void* path) {
 		V(newDataSignal);
 	}
 
-	//closedir
+	//closefile
 	if (fclose(file_entry) == EOF){
 		die("fclose");
 	}
