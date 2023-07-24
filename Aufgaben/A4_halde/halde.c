@@ -10,7 +10,7 @@
 #define MAGIC ((void*)0xbaadf00d)
 
 /// Size of the heap (in bytes).
-#define SIZE (1024*1024*1)
+#define SIZE (1024*1024*1)		//2^20 B = 1 MiB
 
 /// Memory-chunk structure.
 struct mblock {
@@ -20,7 +20,7 @@ struct mblock {
 };
 
 /// Heap-memory area.
-static char memory[SIZE];
+static char memory[SIZE]; 	//the whole memory area
 
 /// Pointer to the first element of the free-memory list.
 static struct mblock *head;
