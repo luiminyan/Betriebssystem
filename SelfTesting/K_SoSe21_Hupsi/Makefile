@@ -7,4 +7,5 @@ hupsi: hupsi.o
 	$(CC) -o hupsi hupsi.o
 
 hupsi.o: hupsi.c
+	$(CC) $(CFLAGS) -c hupsi.c
 	

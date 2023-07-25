@@ -104,6 +104,8 @@ int main(int argc, char* argv[] ) {
     if (ferror(stdin)) {
         die("fgets");
     }
+
+    exit(EXIT_SUCCESS);
 }
 
 // Funktion waitProcess
