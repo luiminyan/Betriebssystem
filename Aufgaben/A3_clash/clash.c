@@ -172,7 +172,7 @@ int main (int argc, char* argv[]) {
         }
 
         //seperate the line
-        //make a dupplication of  line
+        //make a duplication of line
         char* job = strdup(line);
         //error by strdup
         if (job == NULL) {
