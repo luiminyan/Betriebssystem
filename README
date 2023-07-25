@@ -20,3 +20,6 @@ Aufgabe 2: Wsort (qsort + malloc / free + string functions)
 Aufgabe 3: Clash (processes, wait / waipid (collect_zombies) , fork, string.h)
 Aufgabe 4: Halde: Freispeicherverwaltung + LinkedList
 Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / directory operation)
+
+Klausuraufgaben:
+SoSe 21 Probe: PARTY (in progress)
