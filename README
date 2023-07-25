@@ -17,6 +17,6 @@ Uebung 09 Threads
 Aufgabe 0: Sieve (C basics)
 Aufgabe 1: Lilo (linked list)
 Aufgabe 2: Wsort (qsort + malloc / free + string functions)
-Aufgabe 3: Clash (processes)
-Aufgabe 4: Halde
-Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / direactory operation)
+Aufgabe 3: Clash (processes, wait / waipid (collect_zombies) , fork, string.h)
+Aufgabe 4: Halde: Freispeicherverwaltung + LinkedList
+Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / directory operation)
