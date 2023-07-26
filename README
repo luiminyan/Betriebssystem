@@ -22,4 +22,6 @@ Aufgabe 4: Halde: Freispeicherverwaltung + LinkedList
 Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / directory operation)
 
 Klausuraufgaben:
-SoSe 21 Probe: PARTY (in progress)
+SoSe 21 Probe: PARTY (process, read a line from Befehlszeilenargumente (strtol, strtok), execvp)
+SoSe 21: HUPSI (process, read from stdin (strtol, strtok), execvp)
+WiSe 22/23: SAVER (process, fopen/fclose, read_input(from file), execlp)
