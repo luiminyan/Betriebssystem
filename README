@@ -1,10 +1,11 @@
 This is the git repository of material from course Betreibssystem of SoSe 2023.
 
-Git commands:
-git add
-git commit -m "message"
+common Git commands:
+git add -A
+git commit -m "message" / git commit -> modify message in vim
 git status
-git push githuburl 	#push remote
+git push origin <branch name> 
+git pull origin <branch name> 
 
 Uebung 00 - 03: c basics
 Uebung 04 Modules(make,gcc) & Präprozessor(marcos)
