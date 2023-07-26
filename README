@@ -1,4 +1,4 @@
-This is the git repository of material from course Betreibssystem of SoSe 2023.
+This is the git repository of material from course Betriebssystem of SoSe 2023.
 
 common Git commands:
 git add -A
@@ -8,7 +8,7 @@ git push origin <branch name>
 git pull origin <branch name> 
 
 Uebung 00 - 03: c basics
-Uebung 04 Modules(make,gcc) & Präprozessor(marcos)
+Uebung 04 Modules(make, gcc) & Präprozessor(marcos)
 Uebung 05 I/O & Wsort
 Uebung 06 Adressraumstruktur
 Uebung 07 Freispeicherverwaltung
@@ -18,9 +18,9 @@ Uebung 09 Threads
 Aufgabe 0: Sieve (C basics)
 Aufgabe 1: Lilo (linked list)
 Aufgabe 2: Wsort (qsort + malloc / free + string functions)
-Aufgabe 3: Clash (processes, wait / waipid (collect_zombies) , fork, string.h)
+Aufgabe 3: Clash (processes, wait / waitpid (collect_zombies) , fork, string.h)
 Aufgabe 4: Halde: Freispeicherverwaltung + LinkedList
-Aufgabe 5: Palim (thread, sempaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / directory operation)
+Aufgabe 5: Palim (thread, semaphore(data signaling, mutex(mutal exclusion), limiting max thread number), file / directory operation)
 
 Klausuraufgaben:
 SoSe 21 Probe: PARTY (process, read a line from Befehlszeilenargumente (strtol, strtok), execvp)
