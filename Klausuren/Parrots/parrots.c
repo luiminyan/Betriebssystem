@@ -130,12 +130,16 @@ int main(int argc, char* argv[]) {
 
         // put triangle in the queue when successfully parsed
         qPut(tri_queue, tri);
-
-        
-
     }
     if (ferror(file)) {
         die("fgets");
+    }
+
+    // 额外塞进去 CALC_THREADS 个 NULL
+    // Hinweise（来自题目）： Speichern Sie den Wert NULL in der Queue um die Arbeitsthreads "zuverlässig" zu beenden
+    // 意思是： 只要有一个 Arbeitsthread 碰到了NULL， 就说明完事了。（有可能 这几个 Arbeitsthreads 同时 碰到NULL， 所以定义这么多 NULL）
+    for(size_t i = 0; i<CALC_THREADS; i++) {
+        qPut(tri_queue, NULL);
     }
 
     // Threads + Ressourcen aufräumen
