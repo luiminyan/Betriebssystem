@@ -43,7 +43,7 @@ static int found_files = 0;
 // head for the file list
 static search_t* head = NULL;
 
-// TODO: declaire the semaphores
+// declaire the semaphores
 static SEM* listMutex;
 
 //warn: to print error msg in stderr, without exiting the func
@@ -138,7 +138,6 @@ void* thread_start(void* arg) {
 
 // Funktion search_dir()
 void search_dir(char* search, char* dir, bool hunt) {
-    // TODO: rewrite path
     // Verzeichnis offnen
     DIR* directory = opendir(dir);
     if (directory == NULL) {
@@ -150,10 +149,53 @@ void search_dir(char* search, char* dir, bool hunt) {
     struct dirent* entry = NULL;
     struct stat statistics;
     errno = 0;
-
     entry = readdir(directory);
+
     while (entry != NULL) {
-       //TODO: 
+        // self / root dir: skip
+        if (entry->d_name == "." || entry->d_name == "..") {
+            continue;
+        }
+        // create new_pfad = dir / entry->name
+        char new_path[strlen(dir) + 2];
+        strcat(new_path, dir);
+        strcat(new_path, "/");
+        strcat(new_path, entry->d_name);
+
+        // read statistics
+        if (lstat(dir, &statistics) == -1) {
+                warn("lstat");
+                continue;;
+        }
+
+        // entry: regular file
+        if (S_ISREG(statistics.st_mode)) {
+            if (strcmp(entry->d_name, search) == 0) {
+                P(listMutex);
+                // increase found file number
+                found_files++;
+                if (insertElement(new_path) == -1) {
+                    die("insertElement");
+                }
+                V(listMutex);
+
+                // if hunt
+                if (head->hunt == true) {
+                    if (unlink(new_path) == -1) {
+                        warn("unlink");
+                    }
+                }
+            }
+        }
+        // entry: directory
+        else if (S_ISDIR(statistics.st_mode)) {
+            search_dir(head->search, new_path, head->hunt);
+        }
+
+        // reset errno
+        errno = 0;
+
+        // read next element
         entry = readdir(directory);
     }
 
@@ -162,6 +204,9 @@ void search_dir(char* search, char* dir, bool hunt) {
         return;
     }
 
-
-
+    // Aufräumen
+    // closedir
+    if (closedir(directory) == -1) {
+        warn("closedir");
+    }
 }
