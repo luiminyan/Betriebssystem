@@ -255,7 +255,7 @@ static void processDir(char* path) {
 
 	//reset errno
 	errno = 0;
-
+	entry = readdir(directory);
 	//use entry to iterate over directory
 	while (entry != NULL) {
 		if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, "..")) {
