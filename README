@@ -1,5 +1,7 @@
 This is the git repository of material from course Betriebssystem of SoSe 2023.
 
+As I have passed the exam, this repository is no longer active.
+
 common Git commands:
 git add -A
 git commit -m "message" / git commit -> modify message in vim
