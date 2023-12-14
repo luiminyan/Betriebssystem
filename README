@@ -1,14 +1,5 @@
 This is the git repository of material from course Betriebssystem of SoSe 2023.
 
-As I have passed the exam, this repository is no longer active.
-
-common Git commands:
-git add -A
-git commit -m "message" / git commit -> modify message in vim
-git status
-git push origin <branch name> 
-git pull origin <branch name> 
-
 Uebung 00 - 03: c basics
 Uebung 04 Modules(make, gcc) & Präprozessor(marcos)
 Uebung 05 I/O & Wsort
